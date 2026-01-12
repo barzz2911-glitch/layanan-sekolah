@@ -15,10 +15,10 @@
             <div class="logo-circle">S</div>
             <div class="brand">
                 <h1>SmartSchool</h1>
-                <p>Portal Layanan Digital Sekolah</p>
+                <p class="brand-subtitle">Portal Layanan Digital Sekolah</p>
             </div>
         </div>
-        <nav class="topbar-nav">
+        <nav class="topbar-nav" id="topbar-nav">
             <button class="nav-link active" data-section="dashboard">Dashboard</button>
             <button class="nav-link" data-section="layanan">Layanan</button>
             <button class="nav-link" data-section="siswa">Data Siswa</button>
@@ -28,8 +28,37 @@
             <span class="user-role" id="user-role-label">Belum Login</span>
             <div class="user-avatar" id="user-avatar">?</div>
             <button class="btn small ghost" id="btn-auth-toggle">Login</button>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
+    
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay">
+        <nav class="mobile-menu">
+            <button class="mobile-menu-item active" data-section="dashboard">
+                <span>📊</span> Dashboard
+            </button>
+            <button class="mobile-menu-item" data-section="layanan">
+                <span>🧾</span> Layanan Surat
+            </button>
+            <button class="mobile-menu-item" data-section="spp">
+                <span>💳</span> Pembayaran SPP
+            </button>
+            <button class="mobile-menu-item" data-section="izin">
+                <span>📝</span> Izin & Kehadiran
+            </button>
+            <button class="mobile-menu-item" data-section="pengaduan">
+                <span>📨</span> Pengaduan Siswa
+            </button>
+            <button class="mobile-menu-item" data-section="siswa">
+                <span>👨‍🎓</span> Data Siswa
+            </button>
+        </nav>
+    </div>
 
     <!-- Modal Auth -->
     <div class="modal" id="auth-modal" aria-hidden="true">

@@ -46,12 +46,14 @@ function formatDate(date) {
 }
 
 // SECTION SWITCHING
+let showSection; // Declare globally so mobile menu can use it
+
 function initNavigation() {
   const sections = document.querySelectorAll(".section");
   const navLinks = document.querySelectorAll(".nav-link");
   const sideItems = document.querySelectorAll(".sidebar-item");
 
-  function showSection(id) {
+  showSection = function(id) {
     sections.forEach((s) => s.classList.toggle("active", s.id === id));
     navLinks.forEach((btn) =>
       btn.classList.toggle("active", btn.dataset.section === id)
@@ -59,7 +61,12 @@ function initNavigation() {
     sideItems.forEach((btn) =>
       btn.classList.toggle("active", btn.dataset.section === id)
     );
-  }
+    // Update mobile menu items too
+    const mobileMenuItems = document.querySelectorAll(".mobile-menu-item");
+    mobileMenuItems.forEach((btn) =>
+      btn.classList.toggle("active", btn.dataset.section === id)
+    );
+  };
 
   navLinks.forEach((btn) =>
     btn.addEventListener("click", () => showSection(btn.dataset.section))
@@ -667,10 +674,49 @@ function initForms() {
 }
 
 // INIT
+// Mobile Menu Toggle
+function initMobileMenu() {
+  const toggleBtn = document.getElementById("mobile-menu-toggle");
+  const overlay = document.getElementById("mobile-menu-overlay");
+  const mobileMenuItems = document.querySelectorAll(".mobile-menu-item");
+
+  if (!toggleBtn || !overlay) return;
+
+  toggleBtn.addEventListener("click", () => {
+    toggleBtn.classList.toggle("active");
+    overlay.classList.toggle("active");
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = overlay.classList.contains("active") ? "hidden" : "";
+  });
+
+  // Close menu when clicking outside
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) {
+      toggleBtn.classList.remove("active");
+      overlay.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+  });
+
+  // Handle mobile menu item clicks
+  mobileMenuItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      const section = item.dataset.section;
+      if (section && showSection) {
+        showSection(section);
+        toggleBtn.classList.remove("active");
+        overlay.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initNavigation();
   initAuth();
   initForms();
+  initMobileMenu();
   renderSurat();
   renderSPP();
   renderIzin();
