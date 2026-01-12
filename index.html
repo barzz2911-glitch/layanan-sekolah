@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSchool - Digitalisasi Layanan Sekolah</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="logo-circle">S</div>
+            <div class="brand">
+                <h1>SmartSchool</h1>
+                <p>Portal Layanan Digital Sekolah</p>
+            </div>
+        </div>
+        <nav class="topbar-nav">
+            <button class="nav-link active" data-section="dashboard">Dashboard</button>
+            <button class="nav-link" data-section="layanan">Layanan</button>
+            <button class="nav-link" data-section="siswa">Data Siswa</button>
+            <button class="nav-link" data-section="pengaduan">Pengaduan</button>
+        </nav>
+        <div class="topbar-right">
+            <span class="user-role" id="user-role-label">Belum Login</span>
+            <div class="user-avatar" id="user-avatar">?</div>
+            <button class="btn small ghost" id="btn-auth-toggle">Login</button>
+        </div>
+    </header>
+
+    <!-- Modal Auth -->
+    <div class="modal" id="auth-modal" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Login / Verifikasi</h3>
+                <button class="close-modal" id="auth-close">&times;</button>
+            </div>
+            <p class="modal-desc">Gunakan akun demo berikut untuk verifikasi peran:</p>
+            <ul class="demo-list">
+                <li><strong>Admin:</strong> admin / admin123</li>
+                <li><strong>Guru:</strong> guru / guru123</li>
+                <li><strong>Siswa:</strong> siswa / siswa123</li>
+            </ul>
+            <form id="auth-form" class="form-card">
+                <div class="form-group">
+                    <label for="auth-username">Username</label>
+                    <input type="text" id="auth-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="auth-password">Password</label>
+                    <input type="password" id="auth-password" required>
+                </div>
+                <button type="submit" class="btn primary" style="width: 100%;">Masuk</button>
+                <p class="form-note" id="auth-note"></p>
+            </form>
+        </div>
+    </div>
+
+    <main class="layout">
+        <aside class="sidebar">
+            <h2>Menu Utama</h2>
+            <button class="sidebar-item active" data-section="dashboard">
+                <span>📊</span> Ringkasan
+            </button>
+            <button class="sidebar-item" data-section="layanan">
+                <span>🧾</span> Layanan Surat
+            </button>
+            <button class="sidebar-item" data-section="spp">
+                <span>💳</span> Pembayaran SPP
+            </button>
+            <button class="sidebar-item" data-section="izin">
+                <span>📝</span> Izin & Kehadiran
+            </button>
+            <button class="sidebar-item" data-section="pengaduan">
+                <span>📨</span> Pengaduan Siswa
+            </button>
+            <button class="sidebar-item" data-section="siswa">
+                <span>👨‍🎓</span> Manajemen Siswa
+            </button>
+        </aside>
+
+        <section class="content">
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h2>Dashboard</h2>
+                    <p>Ringkasan cepat aktivitas layanan sekolah hari ini.</p>
+                </div>
+                <div class="grid grid-3">
+                    <div class="card stat-card">
+                        <p class="stat-label">Total Pengajuan Hari Ini</p>
+                        <h3 id="stat-total-pengajuan">0</h3>
+                        <p class="stat-desc">Surat, izin, dan pengaduan yang masuk.</p>
+                    </div>
+                    <div class="card stat-card">
+                        <p class="stat-label">Pembayaran SPP Bulan Ini</p>
+                        <h3 id="stat-spp-bulan">0</h3>
+                        <p class="stat-desc">Transaksi tercatat di sistem.</p>
+                    </div>
+                    <div class="card stat-card">
+                        <p class="stat-label">Pengaduan Belum Ditindak</p>
+                        <h3 id="stat-pengaduan-open">0</h3>
+                        <p class="stat-desc">Perlu respon dari pihak sekolah.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-2 mt-lg">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Pengajuan Terbaru</h3>
+                        </div>
+                        <table class="table" id="table-latest-pengajuan">
+                            <thead>
+                                <tr>
+                                    <th>Siswa</th>
+                                    <th>Jenis</th>
+                                    <th>Tanggal</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Diisi via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Pengaduan Terbaru</h3>
+                        </div>
+                        <ul class="list" id="list-latest-pengaduan">
+                            <!-- Diisi via JS -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LAYANAN SURAT -->
+            <section id="layanan" class="section">
+                <div class="role-alert" data-visible="guest">
+                    Anda perlu login sebagai <strong>Siswa</strong> atau <strong>Guru/Admin</strong> untuk mengajukan surat.
+                </div>
+                <div class="section-header">
+                    <h2>Layanan Surat Sekolah</h2>
+                    <p>Digitalisasi permohonan surat keterangan dan dokumen resmi lainnya.</p>
+                </div>
+
+                <div class="grid grid-2">
+                    <form id="form-surat" class="card form-card">
+                        <h3>Form Pengajuan Surat</h3>
+                        <div class="form-group">
+                            <label for="surat-nama">Nama Siswa</label>
+                            <input type="text" id="surat-nama" required placeholder="Nama lengkap siswa">
+                        </div>
+                        <div class="form-group">
+                            <label for="surat-nis">NIS</label>
+                            <input type="text" id="surat-nis" required placeholder="Nomor Induk Siswa">
+                        </div>
+                        <div class="form-group">
+                            <label for="surat-jenis">Jenis Surat</label>
+                            <select id="surat-jenis" required>
+                                <option value="">Pilih jenis surat</option>
+                                <option value="keterangan-aktif">Surat Keterangan Aktif</option>
+                                <option value="izin-kegiatan">Surat Izin Kegiatan</option>
+                                <option value="beasiswa">Surat Rekomendasi Beasiswa</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="surat-keterangan">Keperluan</label>
+                            <textarea id="surat-keterangan" rows="3" placeholder="Jelaskan keperluan surat"></textarea>
+                        </div>
+                        <button type="submit" class="btn primary">Kirim Pengajuan</button>
+                        <p class="form-note" id="surat-note"></p>
+                    </form>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Riwayat Pengajuan Surat</h3>
+                        </div>
+                        <table class="table" id="table-surat">
+                            <thead>
+                                <tr>
+                                    <th>Siswa</th>
+                                    <th>Jenis</th>
+                                    <th>Tanggal</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Diisi via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PEMBAYARAN SPP -->
+            <section id="spp" class="section">
+                <div class="role-alert" data-visible="guest">
+                    Login sebagai <strong>Guru/Admin</strong> untuk mencatat SPP.
+                </div>
+                <div class="section-header">
+                    <h2>Pembayaran SPP</h2>
+                    <p>Pencatatan pembayaran SPP secara digital.</p>
+                </div>
+
+                <div class="grid grid-2">
+                    <form id="form-spp" class="card form-card">
+                        <h3>Input Pembayaran SPP</h3>
+                        <div class="form-group">
+                            <label for="spp-nama">Nama Siswa</label>
+                            <input type="text" id="spp-nama" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="spp-nis">NIS</label>
+                            <input type="text" id="spp-nis" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="spp-bulan">Bulan</label>
+                            <select id="spp-bulan" required>
+                                <option value="">Pilih bulan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="spp-nominal">Nominal (Rp)</label>
+                            <input type="number" id="spp-nominal" required min="0" step="10000">
+                        </div>
+                        <button type="submit" class="btn primary">Simpan Pembayaran</button>
+                        <p class="form-note" id="spp-note"></p>
+                    </form>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Riwayat Pembayaran SPP</h3>
+                        </div>
+                        <table class="table" id="table-spp">
+                            <thead>
+                                <tr>
+                                    <th>Siswa</th>
+                                    <th>Bulan</th>
+                                    <th>Nominal</th>
+                                    <th>Tanggal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Diisi via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- IZIN & KEHADIRAN -->
+            <section id="izin" class="section">
+                <div class="role-alert" data-visible="guest">
+                    Login sebagai <strong>Siswa</strong> atau <strong>Guru/Admin</strong> untuk mengajukan izin.
+                </div>
+                <div class="section-header">
+                    <h2>Pengajuan Izin & Kehadiran</h2>
+                    <p>Rekap kehadiran dan permohonan izin siswa.</p>
+                </div>
+
+                <div class="grid grid-2">
+                    <form id="form-izin" class="card form-card">
+                        <h3>Form Pengajuan Izin</h3>
+                        <div class="form-group">
+                            <label for="izin-nama">Nama Siswa</label>
+                            <input type="text" id="izin-nama" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="izin-nis">NIS</label>
+                            <input type="text" id="izin-nis" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="izin-tanggal">Tanggal Izin</label>
+                            <input type="date" id="izin-tanggal" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="izin-jenis">Jenis Izin</label>
+                            <select id="izin-jenis" required>
+                                <option value="">Pilih jenis izin</option>
+                                <option value="sakit">Sakit</option>
+                                <option value="izin">Izin</option>
+                                <option value="alpha">Alpha (konfirmasi)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="izin-keterangan">Keterangan</label>
+                            <textarea id="izin-keterangan" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn primary">Kirim Pengajuan</button>
+                        <p class="form-note" id="izin-note"></p>
+                    </form>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Rekap Izin / Ketidakhadiran</h3>
+                        </div>
+                        <table class="table" id="table-izin">
+                            <thead>
+                                <tr>
+                                    <th>Siswa</th>
+                                    <th>Tanggal</th>
+                                    <th>Jenis</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Diisi via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PENGADUAN -->
+            <section id="pengaduan" class="section">
+                <div class="role-alert" data-visible="guest">
+                    Login sebagai <strong>Siswa</strong> untuk mengirim pengaduan.
+                </div>
+                <div class="section-header">
+                    <h2>Pengaduan Siswa</h2>
+                    <p>Saluran resmi untuk aspirasi, saran, dan laporan.</p>
+                </div>
+
+                <div class="grid grid-2">
+                    <form id="form-pengaduan" class="card form-card">
+                        <h3>Form Pengaduan</h3>
+                        <div class="form-group">
+                            <label for="pengaduan-nama">Nama Siswa</label>
+                            <input type="text" id="pengaduan-nama" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pengaduan-kelas">Kelas</label>
+                            <input type="text" id="pengaduan-kelas" required placeholder="XI IPA 1 / IX A, dll">
+                        </div>
+                        <div class="form-group">
+                            <label for="pengaduan-jenis">Kategori</label>
+                            <select id="pengaduan-jenis" required>
+                                <option value="">Pilih kategori</option>
+                                <option value="fasilitas">Fasilitas Sekolah</option>
+                                <option value="pembelajaran">Pembelajaran</option>
+                                <option value="bimbingan">Bimbingan / BK</option>
+                                <option value="lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pengaduan-isi">Isi Pengaduan</label>
+                            <textarea id="pengaduan-isi" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn primary">Kirim Pengaduan</button>
+                        <p class="form-note" id="pengaduan-note"></p>
+                    </form>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Daftar Pengaduan</h3>
+                        </div>
+                        <ul class="list" id="list-pengaduan">
+                            <!-- Diisi via JS -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DATA SISWA -->
+            <section id="siswa" class="section">
+                <div class="role-alert" data-visible="guest">
+                    Login sebagai <strong>Admin</strong> untuk mengelola data siswa.
+                </div>
+                <div class="section-header">
+                    <h2>Data Siswa</h2>
+                    <p>Manajemen data siswa sederhana (disimpan di localStorage).</p>
+                </div>
+
+                <div class="grid grid-2">
+                    <form id="form-siswa" class="card form-card">
+                        <h3>Tambah / Edit Siswa</h3>
+                        <input type="hidden" id="siswa-id">
+                        <div class="form-group">
+                            <label for="siswa-nama">Nama</label>
+                            <input type="text" id="siswa-nama" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="siswa-nis">NIS</label>
+                            <input type="text" id="siswa-nis" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="siswa-kelas">Kelas</label>
+                            <input type="text" id="siswa-kelas" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="siswa-email">Email Orang Tua</label>
+                            <input type="email" id="siswa-email">
+                        </div>
+                        <button type="submit" class="btn primary">Simpan Siswa</button>
+                        <p class="form-note" id="siswa-note"></p>
+                    </form>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Daftar Siswa</h3>
+                        </div>
+                        <table class="table" id="table-siswa">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>NIS</th>
+                                    <th>Kelas</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Diisi via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© <span id="year"></span> SmartSchool. Digitalisasi Layanan Sekolah.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
